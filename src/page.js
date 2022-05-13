@@ -8,7 +8,8 @@ var bookmarks = {
     javascript: [],
     local: [],
     redirect: [],
-    ok: []
+    ok: [],
+    duplicate: []
 };
 
 var concurrentRequests;
@@ -32,6 +33,7 @@ var $filterBookmarks = document.getElementById('filter-bookmarks');
 var $deleteAll = document.getElementById('delete-all');
 var $table = document.getElementById('table');
 
+var allBookmarks = [];
 
 
 function readBookmark(node, path) {
@@ -49,25 +51,32 @@ function readBookmark(node, path) {
 
     if (isLink) {
 
-        // Is valid URL?
-        try {
-            var url = new URL(node.url);
-            if (url.host) {
-                bookmarks.queue.push(opt);
+        if (!allBookmarks.some(e => isSameUrl(e.url, node.url))) {
+        
+            allBookmarks.push(node);
+
+            // Is valid URL?
+            try {
+                var url = new URL(node.url);
+                if (url.host) {
+                    bookmarks.queue.push(opt);
+                }
+                else if (url.protocol === 'javascript:') {
+                    bookmarks.javascript.push(opt);
+                }
+                else if (url.protocol === 'file:') {
+                    bookmarks.local.push(opt);
+                }
+                else {
+                    bookmarks.invalid.push(opt);
+                }
             }
-            else if (url.protocol === 'javascript:') {
-                bookmarks.javascript.push(opt);
-            }
-            else if (url.protocol === 'file:') {
-                bookmarks.local.push(opt);
-            }
-            else {
+            catch(e) {
                 bookmarks.invalid.push(opt);
             }
-        }
-        catch(e) {
-            bookmarks.invalid.push(opt);
-        }
+        } else {
+            bookmarks.duplicate.push(opt);
+         }
 
         // bookmarks.all.push(opt);
         return;
