@@ -15,6 +15,7 @@ var bookmarks = {
 var concurrentRequests;
 var timeout;
 var method;
+var ignoreHttps;
 
 var counter = 0;
 var finishedCounter = 0;
@@ -32,6 +33,7 @@ var $testingUrl = document.getElementById('testing-url');
 var $filterBookmarks = document.getElementById('filter-bookmarks');
 var $deleteAll = document.getElementById('delete-all');
 var $table = document.getElementById('table');
+var $ignoreHttps = document.getElementById('ignore-https');
 
 var allBookmarks = [];
 
@@ -117,11 +119,20 @@ function updateBookmark(id, opt, callback) {
 function isSameUrl(str1, str2) {
     var url1 = new URL(str1);
     var url2 = new URL(str2);
+    var protocols = ['http:', 'https:'];
 
-    return url1.protocol === url2.protocol &&
+    if (ignoreHttps) {
+        return protocols.includes(url1.protocol) &&
+            protocols.includes(url2.protocol) &&
             url1.host === url2.host &&
             url1.pathname === url2.pathname &&
             url1.search === url2.search;
+    } else {
+        return url1.protocol === url2.protocol &&
+            url1.host === url2.host &&
+            url1.pathname === url2.pathname &&
+            url1.search === url2.search;
+    }
 }
 
 
@@ -366,6 +377,7 @@ addEvent($formOptions, 'submit', function(e) {
     concurrentRequests = +$concurrentRequests.value;
     timeout = $requestTimeout.value * 1000;
     method = $httpMethod.value;
+    ignoreHttps = $ignoreHttps.checked;
 
     $start.style.display = 'none';
     $options.style.display = 'none';
