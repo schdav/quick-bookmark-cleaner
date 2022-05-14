@@ -47,7 +47,7 @@ function readBookmark(node, path) {
         url: node.url,
         id: node.id,
         fullPath: path.join(' > '),
-        status: 0
+        status: '?'
         // redirectTo: if 301, 302
     };
 
@@ -309,7 +309,6 @@ function renderTemplate(list, opt) {
             limitString(url, 40) + '&#34;"></td>';
         tpl += '<td class="td-remove" title="Remove bookmark &#34;' + title +
             '&#34;"></td>';
-        tpl += '<td class="td-archive" title="Archive page"></td>';
 
         if (opt.redirect) {
             tpl += '<td class="td-update" title="Update URL to &#34;' +
@@ -484,15 +483,6 @@ addEvent($table, 'click', function(e) {
 
         chrome.tabs.create({
             url: bookmarkUrl
-        });
-    }
-
-    else if (className === 'td-archive') {
-        bookmarkUrl = $parent.children[2].innerText;
-
-        chrome.tabs.create({
-            url: 'http://archive.is/?run=1&url=' +
-                encodeURIComponent(bookmarkUrl)
         });
     }
 });

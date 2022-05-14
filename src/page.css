@@ -170,8 +170,7 @@ tr.ok {
 
 .td-link,
 .td-remove,
-.td-update,
-.td-archive {
+.td-update {
     width: 40px;
     text-align: center;
     cursor: pointer;
@@ -191,6 +190,3 @@ tr.ok {
     background-image: url(img/update.png)
 }
 
-.td-archive {
-    background-image: url(img/archive.png)
-}
