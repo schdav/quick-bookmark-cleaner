@@ -1,11 +1,8 @@
 var bookmarks = {
     queue: [],
     error: [],
-    serverError: [],
     invalid: [],
-    timeout: [],
     emptyFolder: [],
-    javascript: [],
     local: [],
     redirect: [],
     ok: [],
@@ -62,9 +59,6 @@ function readBookmark(node, path) {
                 var url = new URL(node.url);
                 if (url.host) {
                     bookmarks.queue.push(opt);
-                }
-                else if (url.protocol === 'javascript:') {
-                    bookmarks.javascript.push(opt);
                 }
                 else if (url.protocol === 'file:') {
                     bookmarks.local.push(opt);
@@ -166,12 +160,8 @@ function httpRequest() {
 
             bookmark.status = xhr.status;
 
-            // 0
-            if (xhr.status < 200) {
-                bookmarks.timeout.push(bookmark);
-            }
             // 2xx - 3xx
-            else if (xhr.status < 400) {
+            if (xhr.status >= 200 && xhr.status < 400) {
                 // 2xx
                 if (isSameUrl(xhr.responseURL, bookmark.url)) {
                     bookmarks.ok.push(bookmark);
@@ -183,13 +173,9 @@ function httpRequest() {
                     bookmarks.redirect.push(bookmark);
                 }
             }
-            // 4xx
-            else if (xhr.status < 500) {
-                bookmarks.error.push(bookmark);
-            }
-            // 5xx
+            // 1xx and 4xx - 5xx
             else {
-                bookmarks.serverError.push(bookmark);
+                bookmarks.error.push(bookmark);
             }
 
             // Next...
@@ -213,7 +199,7 @@ function finished() {
     // Hide options (timeout, method, etc) and progress bar
     $formOptions.style.display = 'none';
 
-    // Show filter (Error, server error, redirected, etc)
+    // Show filter (Error, redirected, etc)
     $filterBookmarks.style.display = 'inline-block';
 
     // Show delete all button

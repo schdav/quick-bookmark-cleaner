@@ -115,24 +115,12 @@ tr.error {
     background-color: #FFCC80
 }
 
-tr.serverError {
-    background-color: #EF9A9A
-}
-
 tr.invalid {
     background-color: #D7CCC8
 }
 
-tr.timeout {
-    background-color: #B0BEC5
-}
-
 tr.emptyFolder {
     background-color: #FFF59D
-}
-
-tr.javascript {
-    background-color: #CE93D8
 }
 
 tr.local {
