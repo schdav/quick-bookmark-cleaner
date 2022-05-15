@@ -19,12 +19,12 @@
         <div id="options">
           <p>
             <label for="concurrent-requests">Concurrent requests:</label>
-            <input type="number" id="concurrent-requests" value="5" />
+            <input type="number" id="concurrent-requests" value="5" min="1" />
           </p>
 
           <p>
             <label for="request-timeout">Timeout in seconds:</label>
-            <input type="number" id="request-timeout" value="10" />
+            <input type="number" id="request-timeout" value="10" min="0" />
           </p>
 
           <p>
@@ -35,6 +35,11 @@
             </select>
           </p>
 
+          <p>
+            <label for="multiple-retries">Number of retries:</label>
+            <input type="number" id="multiple-retries" value="2" min="0" />
+          </p>
+          
           <p>
             <input type="checkbox" id="ignore-https" name="ignore-https" checked="true" />
             <label for="ignore-https">Ignore http: / https:</label>

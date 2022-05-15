@@ -13,6 +13,7 @@ var concurrentRequests;
 var timeout;
 var method;
 var ignoreHttps;
+var multipleRetries;
 
 var counter = 0;
 var finishedCounter = 0;
@@ -31,8 +32,11 @@ var $ignoreHttps = document.getElementById('ignore-https');
 var $optionsSection = document.getElementById('options-section');
 var $resultsSection = document.getElementById('results-section');
 var $progressSection = document.getElementById('progress-section');
+var $multipleRetries = document.getElementById('multiple-retries');
 
 var allBookmarks = [];
+var retries = 0;
+
 
 function readBookmark(node, path) {
     var children = node.children;
@@ -165,21 +169,28 @@ function httpRequest() {
                 // 2xx
                 if (isSameUrl(xhr.responseURL, bookmark.url)) {
                     bookmarks.ok.push(bookmark);
+                    httpRequest();
                 }
                 // 3xx
                 else {
                     bookmark.status = '3xx';
                     bookmark.redirectTo = xhr.responseURL;
                     bookmarks.redirect.push(bookmark);
+                    httpRequest();
                 }
             }
             // 1xx and 4xx - 5xx
             else {
-                bookmarks.error.push(bookmark);
+                if (retries < multipleRetries) {
+                    retries++;
+                    bookmarks.queue.unshift(bookmark);
+                    counter--;
+                    httpRequest();
+                } else {
+                    bookmarks.error.push(bookmark);
+                    httpRequest();
+                }
             }
-
-            // Next...
-            httpRequest();
         }
     };
     xhr.send();
@@ -353,6 +364,7 @@ addEvent($formOptions, 'submit', function(e) {
     timeout = $requestTimeout.value * 1000;
     method = $httpMethod.value;
     ignoreHttps = $ignoreHttps.checked;
+    multipleRetries = $multipleRetries.value;
 
     $optionsSection.style.display = 'none';
     $progressSection.style.display = 'block';
