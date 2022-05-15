@@ -1,83 +1,79 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Quick Bookmark Cleaner</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-        <link rel="stylesheet" href="page.css">
-    </head>
-    <body>
-        <a id="title" href="page.html">Quick Bookmark Cleaner</a>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quick Bookmark Cleaner NG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
+    <link rel="stylesheet" href="custom.css" />
+  </head>
+  <body>
+    <header>
+      <h1><a href="page.html">Quick Bookmark Cleaner NG</a></h1>
+    </header>
 
-        <form action="#" id="form-options" class="clearfix">
-            <button id="start" type="submit">Start</button>
+    <section id="options-section">
+      <form action="#" id="form-options">
+        <h2>Options</h2>
 
-            <div id="options">
-                <label for="concurrent-requests">Concurrent requests</label>
-                <input type="number" id="concurrent-requests" value="7">
+        <div id="options">
+          <p>
+            <label for="concurrent-requests">Concurrent requests:</label>
+            <input type="number" id="concurrent-requests" value="5" />
+          </p>
 
-                <label for="request-timeout">Request timeout (s)</label>
-                <input type="number" id="request-timeout" value="15">
+          <p>
+            <label for="request-timeout">Timeout in seconds:</label>
+            <input type="number" id="request-timeout" value="10" />
+          </p>
 
-                <label for="http-method">HTTP method</label>
-                <select id="http-method">
-                    <option>GET</option>
-                    <option>HEAD</option>
-                </select>
-
-                <input type="checkbox" id="ignore-https" name="ignore-https" checked="true">
-                <label for="ignore-https">Ignore http: / https:</label>
-            </div>
-
-            <div id="progress">
-                <div id="progress-inner"></div>
-            </div>
-
-            <div id="testing-url"></div>
-        </form>
-
-        <form action="#">
-            <select id="filter-bookmarks">
-                <option value="error">Error</option>
-                <option value="duplicate">Duplicate</option>
-                <option value="emptyFolder">Empty folder</option>
-                <option value="invalid">Invalid</option>
-                <option value="local">Local</option>
-                <option value="redirect">Redirected</option>
-                <option value="ok">Ok</option>
+          <p>
+            <label for="http-method">HTTP method:</label>
+            <select id="http-method">
+              <option>GET</option>
+              <option>HEAD</option>
             </select>
+          </p>
 
-            <button id="delete-all">Delete all</button>
-        </form>
+          <p>
+            <input type="checkbox" id="ignore-https" name="ignore-https" checked="true" />
+            <label for="ignore-https">Ignore http: / https:</label>
+          </p>
+        </div>
 
-        <div id="table"></div>
+        <button type="submit">Start</button>
+      </form>
+    </section>
 
-        <!--
-        <table class="redirect-to">
-            <thead>
-                <tr class="redirect">
-                    <th class="td-code">Code</th>
-                    <th class="td-title">Title</th>
-                    <th class="td-url">URL</th>
-                    <th class="td-url" colspan="5">New URL</th>
-                </tr>
-            </thead>
+    <section id="progress-section" style="display: none">
+      <h2>Progress</h2>
 
-            <tbody>
-                <tr data-id="1000" data-array="ok">
-                    <td class="td-code">200</td>
-                    <td class="td-title" contentEditable spellcheck="false" title="path &gt; here">Some bookmark</td>
-                    <td class="td-url" contentEditable spellcheck="false">https://example.net</td>
-                    <td class="td-url">https://example.com</td>
-                    <td class="td-link"></td>
-                    <td class="td-remove"></td>
-                    <td class="td-update"></td>
-                </tr>
-            </tbody>
-        </table>
-        -->
+      <progress id="progress" max="100" value="0"></progress>
+      <div id="testing-url"></div>
+    </section>
 
-        <script src="page.js"></script>
-    </body>
+    <section id="results-section" style="display: none">
+      <h2>Results</h2>
+
+      <form action="#">
+        <p>
+          <select id="filter-bookmarks">
+            <option value="error">Error</option>
+            <option value="duplicate">Duplicate</option>
+            <option value="emptyFolder">Empty folder</option>
+            <option value="invalid">Invalid</option>
+            <option value="local">Local</option>
+            <option value="redirect">Redirected</option>
+            <option value="ok">Ok</option>
+          </select>
+        </p>
+
+        <button id="delete-all">Delete all</button>
+      </form>
+
+      <div id="table"></div>
+    </section>
+
+    <script src="page.js"></script>
+  </body>
 </html>

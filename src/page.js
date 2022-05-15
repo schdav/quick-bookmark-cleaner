@@ -19,21 +19,20 @@ var finishedCounter = 0;
 var total = 0;
 
 var $formOptions = document.getElementById('form-options');
-var $start = document.getElementById('start');
-var $options = document.getElementById('options');
 var $concurrentRequests = document.getElementById('concurrent-requests');
 var $requestTimeout = document.getElementById('request-timeout');
 var $httpMethod = document.getElementById('http-method');
 var $progress = document.getElementById('progress');
-var $progressInner = document.getElementById('progress-inner');
 var $testingUrl = document.getElementById('testing-url');
 var $filterBookmarks = document.getElementById('filter-bookmarks');
 var $deleteAll = document.getElementById('delete-all');
 var $table = document.getElementById('table');
 var $ignoreHttps = document.getElementById('ignore-https');
+var $optionsSection = document.getElementById('options-section');
+var $resultsSection = document.getElementById('results-section');
+var $progressSection = document.getElementById('progress-section');
 
 var allBookmarks = [];
-
 
 function readBookmark(node, path) {
     var children = node.children;
@@ -139,8 +138,9 @@ function httpRequest() {
     }
 
     // Show current url - only first 60 characters
-    var currentUrl = limitString(bookmark.url, 60);
-    $testingUrl.innerHTML = htmlEscape(currentUrl);
+    $testingUrl.innerHTML = bookmark.url.len > 60 ?
+        `${htmlEscape(bookmark.url.substring(0, 60))}...` :
+        htmlEscape(bookmark.url);
 
     // Start HTTP request
     var xhr = new XMLHttpRequest();
@@ -152,8 +152,8 @@ function httpRequest() {
             counter++;
 
             // Progress bar
-            var percentage = 100 * (counter / total).toFixed(2);
-            $progressInner.style.width = percentage + '%';
+            var percentage = Math.round(100 * (counter / total));
+            $progress.value = percentage;
 
             // Page title like 5/400
             document.title = counter + '/' + total;
@@ -197,13 +197,11 @@ function finished() {
     // Now it's over
 
     // Hide options (timeout, method, etc) and progress bar
-    $formOptions.style.display = 'none';
+    $optionsSection.style.display = 'none';
+    $progressSection.style.display = 'none';
 
     // Show filter (Error, redirected, etc)
-    $filterBookmarks.style.display = 'inline-block';
-
-    // Show delete all button
-    $deleteAll.style.display = 'inline-block';
+    $resultsSection.style.display = 'block';
 
     // Show counter for each filter
     Array.from($filterBookmarks).forEach(function(e) {
@@ -226,27 +224,19 @@ function renderTemplate(list, opt) {
 
     opt = opt || {};
 
-    // Table with 7 columns
-    if (opt.redirect) {
-        tpl = '<table class="redirect-to">';
-    }
-
-    // Table with 5 columns
-    else {
-        tpl = '<table>';
-    }
+    tpl = '<table>';
 
     tpl += '<thead>';
-    tpl += '<tr class="' + opt.classTr + '">';
-    tpl += '<th class="td-code">Code</th>';
-    tpl += '<th class="td-title">Title</th>';
+    tpl += '<tr>';
+    tpl += '<th>Code</th>';
+    tpl += '<th>Name</th>';
 
     if (opt.redirect) {
-        tpl += '<th class="td-url">URL</th>';
-        tpl += '<th class="td-url" colspan="5">New URL</th>';
+        tpl += '<th>URL</th>';
+        tpl += '<th colspan="4">New URL</th>';
     }
     else {
-        tpl += '<th class="td-url" colspan="4">URL</th>';
+        tpl += '<th colspan="3">URL</th>';
     }
 
     tpl += '</tr>';
@@ -272,23 +262,23 @@ function renderTemplate(list, opt) {
         redirectTo = htmlEscape(list[i].redirectTo);
 
         tpl += '<tr data-id="' + id + '" data-array="' + opt.classTr + '">';
-        tpl += '<td class="td-code">' + code + '</td>';
+        tpl += '<td>' + code + '</td>';
         tpl += '<td class="td-title" ' + editable + ' title="' +
             fullPath + '">' + title + '</td>';
 
 
         if (url) {
             url = htmlEscape(url);
-            tpl += '<td class="td-url" ' + editable + '>' + url + '</td>';
+            tpl += '<td ' + editable + '>' + url + '</td>';
         }
         // URL is undefined when bookmark is an empty folder
         else {
             url = 'chrome://bookmarks/?id=' + id;
-            tpl += '<td class="td-url">' + url + '</td>';
+            tpl += '<td>' + url + '</td>';
         }
 
         if (opt.redirect) {
-            tpl += '<td class="td-url">' + redirectTo + '</td>';
+            tpl += '<td>' + redirectTo + '</td>';
         }
 
         tpl += '<td class="td-link" title="Visit link &#34;' +
@@ -364,9 +354,8 @@ addEvent($formOptions, 'submit', function(e) {
     method = $httpMethod.value;
     ignoreHttps = $ignoreHttps.checked;
 
-    $start.style.display = 'none';
-    $options.style.display = 'none';
-    $progress.style.display = 'block';
+    $optionsSection.style.display = 'none';
+    $progressSection.style.display = 'block';
 
     chrome.bookmarks.getTree(function(nodes) {
 

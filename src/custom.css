@@ -1,0 +1,24 @@
+body {
+  grid-template-columns: 1fr 80% 1fr;
+}
+
+.td-link,
+.td-remove,
+.td-update {
+  width: 15px;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.td-link {
+  background-image: url(img/link.svg);
+}
+
+.td-remove {
+  background-image: url(img/remove.svg);
+}
+
+.td-update {
+  background-image: url(img/update.svg);
+}
