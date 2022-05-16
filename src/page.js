@@ -27,6 +27,7 @@ var $progress = document.getElementById('progress');
 var $testingUrl = document.getElementById('testing-url');
 var $filterBookmarks = document.getElementById('filter-bookmarks');
 var $deleteAll = document.getElementById('delete-all');
+var $updateAll = document.getElementById('update-all');
 var $table = document.getElementById('table');
 var $ignoreHttps = document.getElementById('ignore-https');
 var $optionsSection = document.getElementById('options-section');
@@ -54,17 +55,17 @@ function readBookmark(node, path) {
     if (isLink) {
 
         if (!allBookmarks.some(e => isSameUrl(e.url, node.url))) {
-        
+
             allBookmarks.push(node);
 
             // Is valid URL?
             try {
                 var url = new URL(node.url);
-                if (url.host) {
-                    bookmarks.queue.push(opt);
-                }
-                else if (url.protocol === 'file:') {
+                if (url.protocol === 'file:') {
                     bookmarks.local.push(opt);
+                }
+                else if (url.host) {
+                    bookmarks.queue.push(opt);
                 }
                 else {
                     bookmarks.invalid.push(opt);
@@ -75,7 +76,7 @@ function readBookmark(node, path) {
             }
         } else {
             bookmarks.duplicate.push(opt);
-         }
+        }
 
         // bookmarks.all.push(opt);
         return;
@@ -101,7 +102,7 @@ function readBookmark(node, path) {
 
 function deleteBookmark(id, callback) {
     chrome.bookmarks.remove(id, function() {
-        callback && callback(!chrome.runtime.lastError);
+        callback(!chrome.runtime.lastError);
     });
 }
 
@@ -227,22 +228,38 @@ function finished() {
 function renderTemplate(list, opt) {
     var tpl;
 
-    // Empty list
-    if (!list.length) {
-        $table.innerHTML = 'None';
-        return;
-    }
-
     opt = opt || {};
+
+    if (!list.length) {
+        $table.style.display = 'none';
+        $deleteAll.disabled = true;
+        $updateAll.disabled = true;
+        return;
+    } else if (opt.ok) {
+        $table.style.display = 'block';
+        $deleteAll.disabled = true;
+        $updateAll.disabled = true;
+    } else if (opt.redirect) {
+        $table.style.display = 'block';
+        $deleteAll.disabled = false;
+        $updateAll.disabled = false;
+    } else {
+        $table.style.display = 'block';
+        $deleteAll.disabled = false;
+        $updateAll.disabled = true;
+    }
 
     tpl = '<table>';
 
     tpl += '<thead>';
     tpl += '<tr>';
     tpl += '<th>Code</th>';
-    tpl += '<th>Name</th>';
+    tpl += '<th>Title</th>';
 
-    if (opt.redirect) {
+    if (opt.ok) {
+        tpl += '<th colspan="2">URL</th>';
+    }
+    else if (opt.redirect) {
         tpl += '<th>URL</th>';
         tpl += '<th colspan="4">New URL</th>';
     }
@@ -292,14 +309,14 @@ function renderTemplate(list, opt) {
             tpl += '<td>' + redirectTo + '</td>';
         }
 
-        tpl += '<td class="td-link" title="Visit link &#34;' +
-            limitString(url, 40) + '&#34;"></td>';
-        tpl += '<td class="td-remove" title="Remove bookmark &#34;' + title +
-            '&#34;"></td>';
+        tpl += '<td class="td-link" title="Visit link"></td>';
+
+        if (!opt.ok) {
+            tpl += '<td class="td-remove" title="Delete bookmark"></td>';
+        }
 
         if (opt.redirect) {
-            tpl += '<td class="td-update" title="Update URL to &#34;' +
-                limitString(redirectTo, 40) + '&#34;"></td>';
+            tpl += '<td class="td-update" title="Update URL to new URL"></td>';
         }
 
         tpl += '</tr>';
@@ -330,13 +347,6 @@ function addEvent(obj, type, callback) {
     obj.addEventListener(type, callback);
 }
 
-function limitString(str, size) {
-    if (str.length > size) {
-        str = str.substr(0, size) + '...';
-    }
-    return str;
-}
-
 function updateBookmarkCount(type, count) {
     var $option = $filterBookmarks.querySelector('[value="' + type + '"]');
 
@@ -350,7 +360,7 @@ function updateBookmarkCount(type, count) {
     $option.innerHTML = html;
 
     if (!count) {
-        $table.innerHTML = 'None';
+        $table.style.display = 'none';
     }
 }
 
@@ -387,10 +397,12 @@ addEvent($formOptions, 'submit', function(e) {
 addEvent($filterBookmarks, 'change', function() {
     var value = this.value;
     var isRedirect = value === 'redirect';
+    var isOk = value === 'ok';
 
     renderTemplate(bookmarks[value], {
         classTr: value,
-        redirect: isRedirect
+        redirect: isRedirect,
+        ok: isOk
     });
 });
 
@@ -401,18 +413,27 @@ addEvent($deleteAll, 'click', function(e) {
 
     var type = $filterBookmarks.value;
 
-    if (type === 'ok') {
-        alert('You should not delete all your bookmarks that are working at once');
-        return;
-    }
-
-    if (confirm('Are you sure?')) {
+    if (confirm(`Are you sure? This will delete ${bookmarks[type].length} element(s)!`)) {
         bookmarks[type].forEach(function(bookmark) {
-            deleteBookmark(bookmark.id);
+            deleteBookmark(bookmark.id, function() { });
         });
 
         updateBookmarkCount(type, 0);
     }
+});
+
+// Update all
+addEvent($updateAll, 'click', function(e) {
+    e.preventDefault();
+
+    var type = $filterBookmarks.value;
+
+    bookmarks[type].forEach(function(bookmark) {
+        var opt = { url: bookmark.redirectTo };
+        updateBookmark(bookmark.id, opt, function() { });
+    });
+
+    updateBookmarkCount(type, 0);
 });
 
 // Click remove, update or link
@@ -427,7 +448,7 @@ addEvent($table, 'click', function(e) {
     function deleteElement() {
         var type = $parent.getAttribute('data-array');
 
-        // Remove element from bookmarks.ok (or bookmarks.error, etc...)
+        // Remove element from or bookmarks.error, etc...
         bookmarks[type] = bookmarks[type].filter(function(e) {
             return e.id !== bookmarkId;
         });
@@ -485,7 +506,7 @@ addEvent($table, 'input', function(e) {
     var text = $target.innerText;
 
     // Changing title or URL
-    var opt = className === 'td-title' ? {title: text} : {url: text};
+    var opt = className === 'td-title' ? { title: text } : { url: text };
 
-    updateBookmark(bookmarkId, opt, function() {});
+    updateBookmark(bookmarkId, opt, function() { });
 });
