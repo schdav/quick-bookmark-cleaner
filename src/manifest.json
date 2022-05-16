@@ -2,20 +2,20 @@
   "manifest_version": 3,
   "name": "Quick Bookmark Cleaner NG",
   "version": "1.0",
-  "description": "Identify broken bookmarks, find duplicates, empty folders and more",
-
+  "description": "Find broken bookmarks, duplicates, empty folders and more",
   "icons": {
     "16": "img/16.png",
     "48": "img/48.png",
     "128": "img/128.png"
   },
-
   "action": {
     "default_icon": "img/128.png",
     "default_popup": "popup.html"
   },
-
-  "permissions": ["bookmarks"],
-
-  "host_permissions": ["*://*/*"]
+  "permissions": [
+    "bookmarks"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ]
 }

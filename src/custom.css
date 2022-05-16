@@ -5,7 +5,7 @@ body {
 .td-link,
 .td-remove,
 .td-update {
-  width: 15px;
+  min-width: 15px;
   cursor: pointer;
   background-repeat: no-repeat;
   background-position: center;

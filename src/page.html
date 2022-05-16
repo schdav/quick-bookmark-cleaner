@@ -1,87 +1,88 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Quick Bookmark Cleaner NG</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
-    <link rel="stylesheet" href="custom.css" />
-  </head>
-  <body>
-    <header>
-      <h1><a href="page.html">Quick Bookmark Cleaner NG</a></h1>
-    </header>
 
-    <section id="options-section">
-      <form action="#" id="form-options">
-        <h2>Options</h2>
+<head>
+  <meta charset="UTF-8" />
+  <title>Quick Bookmark Cleaner NG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
+  <link rel="stylesheet" href="custom.css" />
+</head>
 
-        <div id="options">
-          <p>
-            <label for="concurrent-requests">Concurrent requests:</label>
-            <input type="number" id="concurrent-requests" value="5" min="1" />
-          </p>
+<body>
+  <header>
+    <h1><a href="page.html">Quick Bookmark Cleaner NG</a></h1>
+  </header>
 
-          <p>
-            <label for="request-timeout">Timeout in seconds:</label>
-            <input type="number" id="request-timeout" value="10" min="0" />
-          </p>
+  <section id="options-section">
+    <form action="#" id="form-options">
+      <h2>Options</h2>
 
-          <p>
-            <label for="http-method">HTTP method:</label>
-            <select id="http-method">
-              <option>GET</option>
-              <option>HEAD</option>
-            </select>
-          </p>
+      <p>
+        <label for="concurrent-requests">Concurrent requests:</label>
+        <input type="number" id="concurrent-requests" value="5" min="1" />
+      </p>
 
-          <p>
-            <label for="multiple-retries">Number of retries:</label>
-            <input type="number" id="multiple-retries" value="2" min="0" />
-          </p>
+      <p>
+        <label for="request-timeout">Timeout in seconds:</label>
+        <input type="number" id="request-timeout" value="10" min="0" />
+      </p>
 
-          <p>
-            <input type="checkbox" id="ignore-https" name="ignore-https" checked="true" />
-            <label for="ignore-https">Ignore http: / https:</label>
-          </p>
-        </div>
+      <p>
+        <label for="http-method">HTTP method:</label>
+        <select id="http-method">
+          <option>GET</option>
+          <option>HEAD</option>
+        </select>
+      </p>
 
-        <button type="submit">Start</button>
-      </form>
-    </section>
+      <p>
+        <label for="multiple-retries">Number of retries:</label>
+        <input type="number" id="multiple-retries" value="2" min="0" />
+      </p>
 
-    <section id="progress-section" style="display: none">
-      <h2>Progress</h2>
+      <p>
+        <input type="checkbox" id="ignore-https" checked="true" />
+        <label for="ignore-https">Ignore http: / https:</label>
+      </p>
 
-      <progress id="progress" max="100" value="0"></progress>
-      <div id="testing-url"></div>
-    </section>
+      <button type="submit">Start</button>
+    </form>
+  </section>
 
-    <section id="results-section" style="display: none">
-      <h2>Results</h2>
+  <section id="progress-section" style="display: none">
+    <h2>Progress</h2>
 
-      <form action="#">
-        <p>
-          <select id="filter-bookmarks">
-            <option value="error">Error</option>
-            <option value="duplicate">Duplicate</option>
-            <option value="emptyFolder">Empty folder</option>
-            <option value="invalid">Invalid</option>
-            <option value="local">Local</option>
-            <option value="redirect">Redirected</option>
-            <option value="ok">Ok</option>
-          </select>
-        </p>
+    <progress id="progress" max="100" value="0"></progress>
+    <div id="testing-url"></div>
+  </section>
 
-        <button id="delete-all">Delete all</button>
-        <button id="update-all">Update all</button>
-      </form>
+  <section id="results-section" style="display: none">
+    <h2>Results</h2>
 
-      <div id="table"></div>
-    </section>
+    <form action="#">
+      <p>
+        <select id="filter-bookmarks">
+          <option value="error">Error</option>
+          <option value="duplicate">Duplicate</option>
+          <option value="emptyFolder">Empty folder</option>
+          <option value="invalid">Invalid</option>
+          <option value="local">Local</option>
+          <option value="redirect">Redirected</option>
+          <option value="ok">Ok</option>
+        </select>
+      </p>
 
-    <footer id="footer" style="display: none;"></footer>
+      <button id="delete-all">Delete all</button>
+      <button id="update-all">Update all</button>
+    </form>
 
-    <script src="page.js"></script>
-  </body>
+    <div id="table"></div>
+  </section>
+
+  <footer id="footer" style="display: none;"></footer>
+
+  <script src="page.js"></script>
+</body>
+
 </html>

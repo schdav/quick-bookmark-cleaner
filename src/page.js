@@ -53,18 +53,15 @@ function readBookmark(node, path) {
         id: node.id,
         fullPath: path.join(' > '),
         status: '?'
-        // redirectTo: if 301, 302
     };
 
     if (isLink) {
-
         if (!allBookmarks.some(e => isSameUrl(e.url, node.url))) {
-
             allBookmarks.push(node);
 
-            // Is valid URL?
             try {
                 var url = new URL(node.url);
+
                 if (url.protocol === 'file:') {
                     bookmarks.local.push(opt);
                 }
@@ -75,7 +72,7 @@ function readBookmark(node, path) {
                     bookmarks.invalid.push(opt);
                 }
             }
-            catch(e) {
+            catch (e) {
                 bookmarks.invalid.push(opt);
             }
         } else {
@@ -83,41 +80,37 @@ function readBookmark(node, path) {
         }
 
         totalElements++;
-        // bookmarks.all.push(opt);
         return;
-    }
-
-    // Is folder and title is not empty
-    if (node.title) {
-        path.push(node.title);
-    }
-
-    var i;
-    var len = children.length;
-
-    if (!['0', '1', '2'].includes(opt.id)) {
-        totalElements++;
-
-        if(!len) {
-            bookmarks.emptyFolder.push(opt);
+        // Folder
+    } else {
+        if (node.title) {
+            path.push(node.title);
         }
-    }
 
-    for (i = 0; i < len; i++) {
-        readBookmark(children[i], path.slice(0));
+        if (!['0', '1', '2'].includes(opt.id)) {
+            totalElements++;
+
+            if (!children.length) {
+                bookmarks.emptyFolder.push(opt);
+            }
+        }
+
+        for (var i = 0; i < children.length; i++) {
+            readBookmark(children[i], path.slice(0));
+        }
     }
 }
 
 
 function deleteBookmark(id, callback) {
-    chrome.bookmarks.remove(id, function() {
+    chrome.bookmarks.remove(id, function () {
         callback(!chrome.runtime.lastError);
     });
 }
 
 
 function updateBookmark(id, opt, callback) {
-    chrome.bookmarks.update(id, opt, function() {
+    chrome.bookmarks.update(id, opt, function () {
         callback(!chrome.runtime.lastError);
     });
 }
@@ -151,23 +144,18 @@ function httpRequest() {
         return;
     }
 
-    // Show current url - only first 60 characters
     $testingUrl.innerHTML = bookmark.url.len > 60 ?
         `${htmlEscape(bookmark.url.substring(0, 60))}...` :
         htmlEscape(bookmark.url);
 
-    // Start HTTP request
     var xhr = new XMLHttpRequest();
     xhr.timeout = timeout;
     xhr.open(method, bookmark.url, true);
 
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             counter++;
-
-            // Progress bar
-            var percentage = Math.round(100 * (counter / totalRequests));
-            $progress.value = percentage;
+            $progress.value = Math.round(100 * (counter / totalRequests));
 
             bookmark.status = xhr.status;
 
@@ -200,6 +188,7 @@ function httpRequest() {
             }
         }
     };
+
     xhr.send();
 }
 
@@ -212,25 +201,19 @@ function finished() {
         return;
     }
 
-    // Now it's over
-
-    // Hide options (timeout, method, etc) and progress bar
     $optionsSection.style.display = 'none';
     $progressSection.style.display = 'none';
-
-    // Show filter (Error, redirected, etc)
     $resultsSection.style.display = 'block';
 
-    // Show counter for each filter
-    Array.from($filterBookmarks).forEach(function(e) {
+    Array.from($filterBookmarks).forEach(function (e) {
         e.innerHTML += ' (' + bookmarks[e.value].length + ')';
     });
 
     // Show table via renderTemplate
     $filterBookmarks.dispatchEvent(new Event('change'));
-        
+
     end = new Date();
-    
+
     $footer.style.display = 'block';
     $footer.innerHTML = `Checked ${totalElements} element(s) in ${end - start} ms.`
 }
@@ -283,7 +266,6 @@ function renderTemplate(list, opt) {
 
     tpl += '<tbody>';
 
-
     var id;
     var code;
     var title;
@@ -292,7 +274,7 @@ function renderTemplate(list, opt) {
     var redirectTo;
     var editable = 'contentEditable spellcheck="false"';
 
-    for (var i = 0, len = list.length; i < len; i++) {
+    for (var i = 0; i < list.length; i++) {
         id = list[i].id;
         code = list[i].status;
         title = htmlEscape(list[i].title);
@@ -300,17 +282,15 @@ function renderTemplate(list, opt) {
         url = list[i].url;
         redirectTo = htmlEscape(list[i].redirectTo);
 
-        tpl += '<tr data-id="' + id + '" data-array="' + opt.classTr + '">';
+        tpl += '<tr data-id="' + id + '">';
         tpl += '<td>' + code + '</td>';
-        tpl += '<td class="td-title" ' + editable + ' title="' +
-            fullPath + '">' + title + '</td>';
-
+        tpl += '<td class="td-title" ' + editable + ' title="' + fullPath + '">' + title + '</td>';
 
         if (url) {
             url = htmlEscape(url);
             tpl += '<td ' + editable + '>' + url + '</td>';
         }
-        // URL is undefined when bookmark is an empty folder
+        // Empty folder
         else {
             url = 'chrome://bookmarks/?id=' + id;
             tpl += '<td>' + url + '</td>';
@@ -349,51 +329,45 @@ function htmlEscape(str) {
         "'": '&#39;'
     };
 
-    return ('' + str).replace(/[&<>"']/g, function(match) {
+    return ('' + str).replace(/[&<>"']/g, function (match) {
         return map[match];
     });
 }
 
-function addEvent(obj, type, callback) {
-    obj.addEventListener(type, callback);
-}
 
 function updateBookmarkCount(type, count) {
     var $option = $filterBookmarks.querySelector('[value="' + type + '"]');
 
-    // Remove current counter from <option>
     var html = $option.innerHTML.split(' ');
     html.pop();
-
-    // Set new counter to <option>
     html.push('(' + count + ')');
     html = html.join(' ');
     $option.innerHTML = html;
 
     if (!count) {
         $table.style.display = 'none';
+        $deleteAll.disabled = true;
+        $updateAll.disabled = true;
     }
 }
 
 
 // Press Start
-addEvent($formOptions, 'submit', function(e) {
+$formOptions.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    // Set options
-    concurrentRequests = +$concurrentRequests.value;
-    timeout = $requestTimeout.value * 1000;
+    concurrentRequests = Math.abs($concurrentRequests.value);
+    timeout = Math.abs($requestTimeout.value) * 1000;
     method = $httpMethod.value;
     ignoreHttps = $ignoreHttps.checked;
-    multipleRetries = $multipleRetries.value;
+    multipleRetries = Math.abs($multipleRetries.value);
 
     $optionsSection.style.display = 'none';
     $progressSection.style.display = 'block';
 
-    chrome.bookmarks.getTree(function(nodes) {
+    chrome.bookmarks.getTree(function (nodes) {
         start = new Date();
 
-        // Read all bookmarks recursively and set the variable bookmarks.queue
         readBookmark(nodes[0], []);
 
         totalRequests = bookmarks.queue.length;
@@ -405,120 +379,94 @@ addEvent($formOptions, 'submit', function(e) {
 });
 
 
-// Change filter
-addEvent($filterBookmarks, 'change', function() {
+$filterBookmarks.addEventListener('change', function () {
     var value = this.value;
     var isRedirect = value === 'redirect';
     var isOk = value === 'ok';
 
-    renderTemplate(bookmarks[value], {
-        classTr: value,
-        redirect: isRedirect,
-        ok: isOk
-    });
+    renderTemplate(bookmarks[value], { redirect: isRedirect, ok: isOk });
 });
 
 
-// Delete all
-addEvent($deleteAll, 'click', function(e) {
+$deleteAll.addEventListener('click', function (e) {
     e.preventDefault();
 
     var type = $filterBookmarks.value;
 
     if (confirm(`Are you sure? This will delete ${bookmarks[type].length} element(s)!`)) {
-        bookmarks[type].forEach(function(bookmark) {
-            deleteBookmark(bookmark.id, function() { });
+        bookmarks[type].forEach(function (bookmark) {
+            deleteBookmark(bookmark.id, function () { });
         });
 
         updateBookmarkCount(type, 0);
     }
 });
 
-// Update all
-addEvent($updateAll, 'click', function(e) {
+
+$updateAll.addEventListener('click', function (e) {
     e.preventDefault();
 
     var type = $filterBookmarks.value;
 
-    bookmarks[type].forEach(function(bookmark) {
+    bookmarks[type].forEach(function (bookmark) {
         var opt = { url: bookmark.redirectTo };
-        updateBookmark(bookmark.id, opt, function() { });
+        updateBookmark(bookmark.id, opt, function () { });
     });
 
     updateBookmarkCount(type, 0);
 });
 
-// Click remove, update or link
-addEvent($table, 'click', function(e) {
+$table.addEventListener('click', function (e) {
     var $target = e.target;
     var $parent = $target.parentNode;
     var className = $target.className;
-    var bookmarkId;
-    var bookmarkUrl;
-    var bookmarkRedirectUrl;
+    var bookmarkId = $parent.getAttribute('data-id');
 
     function deleteElement() {
-        var type = $parent.getAttribute('data-array');
+        var type = $filterBookmarks.value;
 
-        // Remove element from or bookmarks.error, etc...
-        bookmarks[type] = bookmarks[type].filter(function(e) {
+        bookmarks[type] = bookmarks[type].filter(function (e) {
             return e.id !== bookmarkId;
         });
 
-        // Remove line from HTML
         $parent.parentNode.removeChild($parent);
 
-        var count = bookmarks[type].length;
-
-        updateBookmarkCount(type, count);
+        updateBookmarkCount(type, bookmarks[type].length);
     }
 
     if (className === 'td-remove') {
-        bookmarkId = $parent.getAttribute('data-id');
-
-        deleteBookmark(bookmarkId, function(success) {
+        deleteBookmark(bookmarkId, function (success) {
             if (success) {
                 deleteElement();
             }
         });
     }
-
     else if (className === 'td-update') {
-        bookmarkId = $parent.getAttribute('data-id');
-        bookmarkRedirectUrl = $parent.children[3].innerText;
-
         var opt = {
-            url: bookmarkRedirectUrl
+            url: $parent.children[3].innerText
         };
 
-        updateBookmark(bookmarkId, opt, function(success) {
+        updateBookmark(bookmarkId, opt, function (success) {
             if (success) {
                 deleteElement();
             }
         });
     }
-
     else if (className === 'td-link') {
-        bookmarkUrl = $parent.children[2].innerText;
-
         chrome.tabs.create({
-            url: bookmarkUrl
+            url: $parent.children[2].innerText
         });
     }
 });
 
 
-// Change title or URL
-addEvent($table, 'input', function(e) {
+$table.addEventListener('input', function (e) {
     var $target = e.target;
     var $parent = $target.parentNode;
     var className = $target.className;
-
     var bookmarkId = $parent.getAttribute('data-id');
-    var text = $target.innerText;
 
-    // Changing title or URL
-    var opt = className === 'td-title' ? { title: text } : { url: text };
+    var opt = className === 'td-title' ? { title: $target.innerText } : { url: $target.innerText };
 
-    updateBookmark(bookmarkId, opt, function() { });
+    updateBookmark(bookmarkId, opt, function () { });
 });
