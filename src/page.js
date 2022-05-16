@@ -17,7 +17,8 @@ var multipleRetries;
 
 var counter = 0;
 var finishedCounter = 0;
-var total = 0;
+var totalRequests = 0;
+var totalElements = 0;
 
 var $formOptions = document.getElementById('form-options');
 var $concurrentRequests = document.getElementById('concurrent-requests');
@@ -34,9 +35,12 @@ var $optionsSection = document.getElementById('options-section');
 var $resultsSection = document.getElementById('results-section');
 var $progressSection = document.getElementById('progress-section');
 var $multipleRetries = document.getElementById('multiple-retries');
+var $footer = document.getElementById('footer');
 
 var allBookmarks = [];
 var retries = 0;
+var start;
+var end;
 
 
 function readBookmark(node, path) {
@@ -78,6 +82,7 @@ function readBookmark(node, path) {
             bookmarks.duplicate.push(opt);
         }
 
+        totalElements++;
         // bookmarks.all.push(opt);
         return;
     }
@@ -90,8 +95,12 @@ function readBookmark(node, path) {
     var i;
     var len = children.length;
 
-    if (!len) {
-        bookmarks.emptyFolder.push(opt);
+    if (!['0', '1', '2'].includes(opt.id)) {
+        totalElements++;
+
+        if(!len) {
+            bookmarks.emptyFolder.push(opt);
+        }
     }
 
     for (i = 0; i < len; i++) {
@@ -157,11 +166,8 @@ function httpRequest() {
             counter++;
 
             // Progress bar
-            var percentage = Math.round(100 * (counter / total));
+            var percentage = Math.round(100 * (counter / totalRequests));
             $progress.value = percentage;
-
-            // Page title like 5/400
-            document.title = counter + '/' + total;
 
             bookmark.status = xhr.status;
 
@@ -222,6 +228,11 @@ function finished() {
 
     // Show table via renderTemplate
     $filterBookmarks.dispatchEvent(new Event('change'));
+        
+    end = new Date();
+    
+    $footer.style.display = 'block';
+    $footer.innerHTML = `Checked ${totalElements} element(s) in ${end - start} ms.`
 }
 
 
@@ -380,11 +391,12 @@ addEvent($formOptions, 'submit', function(e) {
     $progressSection.style.display = 'block';
 
     chrome.bookmarks.getTree(function(nodes) {
+        start = new Date();
 
         // Read all bookmarks recursively and set the variable bookmarks.queue
         readBookmark(nodes[0], []);
 
-        total = bookmarks.queue.length;
+        totalRequests = bookmarks.queue.length;
 
         for (var i = 0; i < concurrentRequests; i++) {
             httpRequest();
