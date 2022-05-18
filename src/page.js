@@ -144,9 +144,8 @@ function httpRequest() {
         return;
     }
 
-    $testingUrl.innerHTML = bookmark.url.len > 60 ?
-        `${htmlEscape(bookmark.url.substring(0, 60))}...` :
-        htmlEscape(bookmark.url);
+    $testingUrl.innerText = bookmark.url.len > 60 ?
+        `${bookmark.url.substring(0, 60)}...` : bookmark.url;
 
     var xhr = new XMLHttpRequest();
     xhr.timeout = timeout;
@@ -206,7 +205,7 @@ function finished() {
     $resultsSection.style.display = 'block';
 
     Array.from($filterBookmarks).forEach(function (e) {
-        e.innerHTML += ' (' + bookmarks[e.value].length + ')';
+        e.innerText += ' (' + bookmarks[e.value].length + ')';
     });
 
     // Show table via renderTemplate
@@ -215,13 +214,11 @@ function finished() {
     end = new Date();
 
     $footer.style.display = 'block';
-    $footer.innerHTML = `Checked ${totalElements} element(s) in ${end - start} ms.`
+    $footer.innerText = `Checked ${totalElements} element(s) in ${end - start} ms.`
 }
 
 
 function renderTemplate(list, opt) {
-    var tpl;
-
     opt = opt || {};
 
     if (!list.length) {
@@ -243,28 +240,46 @@ function renderTemplate(list, opt) {
         $updateAll.disabled = true;
     }
 
-    tpl = '<table>';
+    var table = document.createElement('table',);
 
-    tpl += '<thead>';
-    tpl += '<tr>';
-    tpl += '<th>Code</th>';
-    tpl += '<th>Title</th>';
+    var thead = document.createElement('thead');
+    table.appendChild(thead);
+
+    var tr = document.createElement('tr');
+    thead.appendChild(tr);
+
+    var th = document.createElement('th');
+    th.innerText = 'Code';
+    tr.appendChild(th);
+
+    var th = document.createElement('th');
+    th.innerText = 'Title';
+    tr.appendChild(th);
 
     if (opt.ok) {
-        tpl += '<th colspan="2">URL</th>';
+        var th = document.createElement('th');
+        th.setAttribute('colspan', '2')
+        th.innerText = 'URL';
+        tr.appendChild(th);
     }
     else if (opt.redirect) {
-        tpl += '<th>URL</th>';
-        tpl += '<th colspan="4">New URL</th>';
+        var th = document.createElement('th');
+        th.innerText = 'URL';
+        tr.appendChild(th);
+        var th = document.createElement('th');
+        th.setAttribute('colspan', '4')
+        th.innerText = 'New URL';
+        tr.appendChild(th);
     }
     else {
-        tpl += '<th colspan="3">URL</th>';
+        var th = document.createElement('th');
+        th.setAttribute('colspan', '3')
+        th.innerText = 'URL';
+        tr.appendChild(th);
     }
 
-    tpl += '</tr>';
-    tpl += '</thead>';
-
-    tpl += '<tbody>';
+    var tbody = document.createElement('tbody');
+    table.appendChild(tbody);
 
     var id;
     var code;
@@ -272,77 +287,82 @@ function renderTemplate(list, opt) {
     var fullPath;
     var url;
     var redirectTo;
-    var editable = 'contentEditable spellcheck="false"';
 
     for (var i = 0; i < list.length; i++) {
         id = list[i].id;
         code = list[i].status;
-        title = htmlEscape(list[i].title);
-        fullPath = htmlEscape(list[i].fullPath);
+        title = list[i].title;
+        fullPath = list[i].fullPath;
         url = list[i].url;
-        redirectTo = htmlEscape(list[i].redirectTo);
+        redirectTo = list[i].redirectTo;
 
-        tpl += '<tr data-id="' + id + '">';
-        tpl += '<td>' + code + '</td>';
-        tpl += '<td class="td-title" ' + editable + ' title="' + fullPath + '">' + title + '</td>';
+        var tr = document.createElement('tr');
+        tr.setAttribute('data-id', id);
+        tbody.appendChild(tr);
 
+        var td = document.createElement('td');
+        td.innerText = code;
+        tr.appendChild(td);
+
+        var td = document.createElement('td');
+        td.innerText = title;
+        td.setAttribute('class', 'td-title');
+        td.setAttribute('contentEditable', '');
+        td.setAttribute('spellcheck', 'false');
+        td.setAttribute('title', fullPath);
+        tr.appendChild(td);
+
+        var td = document.createElement('td');
         if (url) {
-            url = htmlEscape(url);
-            tpl += '<td ' + editable + '>' + url + '</td>';
-        }
-        // Empty folder
-        else {
+            td.setAttribute('contentEditable', '');
+            td.setAttribute('spellcheck', 'false');
+            // Empty folder
+        } else {
             url = 'chrome://bookmarks/?id=' + id;
-            tpl += '<td>' + url + '</td>';
         }
+
+        td.innerText = url;
+        tr.appendChild(td);
 
         if (opt.redirect) {
-            tpl += '<td>' + redirectTo + '</td>';
+            var td = document.createElement('td');
+            td.innerText = redirectTo;
+            tr.appendChild(td);
         }
 
-        tpl += '<td class="td-link" title="Visit link"></td>';
+        var td = document.createElement('td');
+        td.setAttribute('class', 'td-link');
+        td.setAttribute('title', 'Visit link');
+        tr.appendChild(td);
 
         if (!opt.ok) {
-            tpl += '<td class="td-remove" title="Delete bookmark"></td>';
+            var td = document.createElement('td');
+            td.setAttribute('class', 'td-remove');
+            td.setAttribute('title', 'Delete bookmark');
+            tr.appendChild(td);
         }
 
         if (opt.redirect) {
-            tpl += '<td class="td-update" title="Update URL to new URL"></td>';
+            var td = document.createElement('td');
+            td.setAttribute('class', 'td-update');
+            td.setAttribute('title', 'Update URL to new URL');
+            tr.appendChild(td);
         }
-
-        tpl += '</tr>';
     }
 
-    tpl += '</tbody>';
-    tpl += '</table>';
-
-    $table.innerHTML = tpl;
-}
-
-
-function htmlEscape(str) {
-    var map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&#34;',
-        "'": '&#39;'
-    };
-
-    return ('' + str).replace(/[&<>"']/g, function (match) {
-        return map[match];
-    });
+    $table.innerText = '';
+    $table.appendChild(table);
 }
 
 
 function updateBookmarkCount(type, count) {
     var $option = $filterBookmarks.querySelector('[value="' + type + '"]');
 
-    var html = $option.innerHTML.split(' ');
-    html.pop();
-    html.push('(' + count + ')');
-    html = html.join(' ');
-    $option.innerHTML = html;
+    var text = $option.innerText.split(' ');
+    text.pop();
+    text.push('(' + count + ')');
+    text = text.join(' ');
+    $option.innerText = text;
 
     if (!count) {
         $table.style.display = 'none';
