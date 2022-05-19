@@ -5,11 +5,16 @@
   "description": "Find broken bookmarks, duplicates, empty folders and more",
   "icons": {
     "16": "img/16.png",
+    "32": "img/32.png",
     "48": "img/48.png",
     "128": "img/128.png"
   },
+  "options_page": "page.html",
   "action": {
-    "default_icon": "img/128.png",
+    "default_icon": {
+      "16": "img/16.png",
+      "32": "img/32.png"
+    },
     "default_popup": "popup.html"
   },
   "permissions": [

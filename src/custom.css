@@ -1,5 +1,13 @@
+:root {
+  --accent: #00adb5;
+}
+
 body {
   grid-template-columns: 1fr 80% 1fr;
+}
+
+button:enabled:hover {
+  filter: none;
 }
 
 .td-link,
@@ -21,4 +29,18 @@ body {
 
 .td-update {
   background-image: url(img/update.svg);
+}
+
+@media (prefers-color-scheme: dark) {
+  .td-link {
+    background-image: url(img/link-light.svg);
+  }
+
+  .td-remove {
+    background-image: url(img/remove-light.svg);
+  }
+
+  .td-update {
+    background-image: url(img/update-light.svg);
+  }
 }

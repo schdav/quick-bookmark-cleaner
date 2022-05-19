@@ -1,45 +1,24 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   id="svg2"
-   preserveAspectRatio="xMidYMid meet"
-   viewBox="0 0 67.000000 67.000000"
-   height="67.000000pt"
-   width="67.000000pt"
-   version="1.0">
-  <defs
-     id="defs12" />
-  <metadata
-     id="metadata4">
-Created by potrace 1.13, written by Peter Selinger 2001-2015
-<rdf:RDF>
-  <cc:Work
-     rdf:about="">
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type
-       rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-    <dc:title></dc:title>
-  </cc:Work>
-</rdf:RDF>
-</metadata>
-  <g
-     style="fill:#f57f17;fill-opacity:1"
-     id="g6"
-     stroke="none"
-     fill="#000000"
-     transform="translate(0.000000,67.000000) scale(0.100000,-0.100000)">
-    <path
-       style="fill:#f57f17;fill-opacity:1"
-       id="path8"
-       d="M 32,644 C 10,629 10,627 10,347 10,107 12,61 26,42 41,20 43,20 323,20 c 240,0 286,2 305,16 22,15 22,17 22,300 0,271 -1,285 -20,304 -19,19 -33,20 -298,20 C 97,660 51,658 32,644 Z M 324.54469,423.64918 c 81,-53 28.92904,92.1821 -12.07096,4.1821 -66,-143 106.05622,-117.00276 -1.94378,2.99724 -86,96 -115.22392,-63.20173 1.77608,-3.20173 63,33 -44.76134,34.02239 12.23866,-3.97761 z" />
-  </g>
-  <path
-     transform="matrix(0.77319448,0.06103208,-0.06022585,0.76298071,8.5745239,7.2332333)"
-     d="M 49.780314,51.16081 34.718166,45.07533 20.886301,53.594768 22.019477,37.389298 9.6427283,26.867064 25.405217,22.937012 31.587831,7.9144755 40.196409,21.69104 56.394223,22.928836 45.952128,35.373273 Z"
-     id="path3367"
-     style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="128" height="128" version="1.1" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <filter id="filter4134" x="-.041463" y="-.043553" width="1.0707" height="1.0743" color-interpolation-filters="sRGB">
+   <feFlood flood-color="rgb(0,0,0)" flood-opacity=".49804" result="flood"/>
+   <feComposite in="flood" in2="SourceGraphic" operator="out" result="composite1"/>
+   <feGaussianBlur in="composite1" result="blur" stdDeviation="1"/>
+   <feOffset dx="-1" dy="-1" result="offset"/>
+   <feComposite in="offset" in2="SourceGraphic" operator="atop" result="composite2"/>
+  </filter>
+  <filter id="filter4172" x="-.023077" y="-.023077" width="1.0558" height="1.0558" color-interpolation-filters="sRGB">
+   <feFlood flood-color="rgb(0,0,0)" flood-opacity=".49804" result="flood"/>
+   <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
+   <feGaussianBlur in="composite1" result="blur" stdDeviation="1"/>
+   <feOffset dx="1" dy="1" result="offset"/>
+   <feComposite in="SourceGraphic" in2="offset" result="composite2"/>
+  </filter>
+ </defs>
+ <g>
+  <path id="Quadrat" transform="matrix(.87432 0 0 .87432 7.6066 7.6066)" x="12" y="12" width="104" height="104" d="m32 12h64a20 20 45 0 1 20 20v64a20 20 135 0 1-20 20h-64a20 20 45 0 1-20-20v-64a20 20 135 0 1 20-20z" fill="#00adb5" filter="url(#filter4172)"/>
+  <path id="Stern" transform="matrix(.8656 0 0 .83925 9.0341 11.297)" d="m64 20.919c2.8608 0 10.347 23.973 12.661 25.654s27.427 1.393 28.311 4.1138-19.602 17.248-20.486 19.969c-0.88405 2.7208 7.1506 26.515 4.8361 28.197-2.3145 1.6816-22.461-13.313-25.322-13.313s-23.008 14.994-25.322 13.313c-2.3145-1.6816 5.7202-25.476 4.8361-28.197-0.88405-2.7208-21.37-17.248-20.486-19.969s25.997-2.4323 28.311-4.1138 9.8003-25.654 12.661-25.654z" fill="#fff" filter="url(#filter4134)"/>
+ </g>
 </svg>
